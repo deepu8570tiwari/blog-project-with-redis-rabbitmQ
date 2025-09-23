@@ -3,9 +3,6 @@ const jwt = require("jsonwebtoken");
 
 const LoginUser = async (req, res) => {
   try {
-    console.log("Headers:", req.headers);
-    console.log("Body:", req.body);
-    console.log(req.body);
     const { name, email, image } = req.body;
 
     let user = await User.findOne({ email });
