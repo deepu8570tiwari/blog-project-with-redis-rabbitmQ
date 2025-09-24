@@ -33,4 +33,36 @@ const myProfile=tryCatch(async(req,res)=>{
 
   res.json(user);
 })
-module.exports = { LoginUser,myProfile };
+
+const getUserProfile=tryCatch(async(req,res)=>{
+ const user = await User.findById(req.userId); 
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  res.status(200).json({message:user});
+})
+
+const updateUserProfile = tryCatch(async (req, res) => {
+  const { name, bio, instagram, facebook, linkedin } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { name, bio, instagram, facebook, linkedin },
+    { new: true }
+  );
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const token = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
+    expiresIn: "5d",
+  });
+
+  res.status(200).json({ message: "User Profile updated", token, user });
+});
+module.exports = { 
+  LoginUser,
+  myProfile,
+  getUserProfile,
+  updateUserProfile
+};
