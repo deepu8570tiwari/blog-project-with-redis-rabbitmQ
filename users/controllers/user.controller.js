@@ -1,8 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const {tryCatch}=require("../utils/trycatch");
-const getDataUri = require("../utils/dataUri");
-const cloudinary =require("../config/cloudinary");
+const { uploadToCloudinary } = require('../middleware/upload');
 
 const LoginUser = tryCatch(async (req, res) => {
   const { name, email, image } = req.body;
@@ -62,25 +61,20 @@ const updateUserProfile = tryCatch(async (req, res) => {
 
   res.status(200).json({ message: "User Profile updated", token, user });
 });
-const updateUserProfilePic=tryCatch(async(req,res)=>{
-  if(!req.file){
-    return res.status(400).json({message:"No file to upload"})
+const updateUserProfilePic = tryCatch(async (req, res) => {
+  console.log(req.file);
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
   }
-  const fileBuffer=getBuffer(req.file);
-  if(!fileBuffer || !fileBuffer.content){
-    return res.status(400).json({message:"failed to generate buffer"})
-  }
-   // upload to cloudinary
-    const result = await cloudinary.uploader.upload(fileBuffer.content, {
-      folder: "user_profiles", // optional folder
-    });
 
-    res.status(200).json({
-      message: "File uploaded successfully",
-      url: result.secure_url,
-      public_id: result.public_id,
-    });
-})
+  const result = await uploadToCloudinary(req.file.buffer, 'user_profiles');
+
+  res.status(200).json({
+    message: 'File uploaded successfully',
+    url: result.secure_url,
+    public_id: result.public_id,
+  });
+});
 module.exports = { 
   LoginUser,
   myProfile,
