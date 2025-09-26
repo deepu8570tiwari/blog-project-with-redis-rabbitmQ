@@ -6,7 +6,6 @@ const userRoutes = require("./routes/user.routes");
 dotenv.config();
 const app = express();
 
-// ✅ Must be before routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
