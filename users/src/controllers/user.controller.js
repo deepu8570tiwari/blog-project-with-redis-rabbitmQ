@@ -44,7 +44,6 @@ const getUserProfile=tryCatch(async(req,res)=>{
 })
 
 const updateUserProfile = tryCatch(async (req, res) => {
-   console.log(req.user._id + " test"); // works now
   const { name, bio, instagram, facebook, linkedin } = req.body;
 
   const user = await User.findByIdAndUpdate(
@@ -62,7 +61,6 @@ const updateUserProfile = tryCatch(async (req, res) => {
   res.status(200).json({ message: "User Profile updated", token, user });
 });
 const updateUserProfilePic = tryCatch(async (req, res) => {
-  console.log(req.file);
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
