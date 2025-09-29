@@ -5,6 +5,8 @@ const authorRoutes=require("./routes/routes");
 dotenv.config();
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const PORT = process.env.NODE_PORT || 5000;
 app.use("/api/v1",authorRoutes)
 connectDB().then(()=>{
