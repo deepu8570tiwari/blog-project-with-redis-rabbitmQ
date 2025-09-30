@@ -33,4 +33,4 @@ const connectDB=async function initDB(){
     console.log("Error in Database", error);
   }
 }
-module.exports = connectDB;
+module.exports = {connectDB, postGreSql };

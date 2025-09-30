@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const connectDB =require("./configs/db")
+const {connectDB} =require("./configs/db")
 const authorRoutes=require("./routes/routes");
 dotenv.config();
 
