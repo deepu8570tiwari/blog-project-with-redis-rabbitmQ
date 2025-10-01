@@ -85,5 +85,15 @@ const updateBlog = tryCatch(async (req, res) => {
   });
 });
 
-
-module.exports = { createBlog,updateBlog };
+const deleteBlog=tryCatch(async(req, res)=>{
+  const {id}=req.params;
+  const blog= await postGreSql `SELECT * from blogs where id =${id}`;
+  if (String(blog[0].author) !== String(req.user?.id)) {
+    return res.status(401).json({ message: "You are not author of this blog" });
+  }
+  const blogDeleted=await postGreSql`DELETE FROM blogs WHERE id = ${id}`;
+  if(blogDeleted){
+    return res.status(200).json({message:"Blog deleted successfully"});
+  }
+})
+module.exports = { createBlog,updateBlog,deleteBlog};
