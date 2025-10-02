@@ -5,7 +5,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const isAuth=require("../middleware/isAuth");
 const {createBlog,updateBlog,deleteBlog}=require("../controllers/authors.js");
-router.post("/blog", isAuth, upload.single('image'), createBlog);
+router.post("/blog/create", isAuth, upload.single('image'), createBlog);
 router.put("/blog/:id", isAuth, upload.single('image'), updateBlog);
 router.delete("/blog/:id", isAuth, deleteBlog);
 module.exports=router;
