@@ -5,7 +5,6 @@ const { uploadToCloudinary } = require('../middleware/upload');
 
 const LoginUser = tryCatch(async (req, res) => {
   const { name, email, image } = req.body;
-
   let user = await User.findOne({ email });
   if (!user) {
     user = await User.create({ name, email, image });
@@ -24,8 +23,6 @@ const LoginUser = tryCatch(async (req, res) => {
 });
 
 const myProfile=tryCatch(async(req,res)=>{
-  console.log("Decoded userId:", req.user._id);
-
  const user = await User.findById(req.user._id); 
   if (!user) {
     return res.status(404).json({ message: "User not found" });
@@ -39,13 +36,11 @@ const getUserProfile=tryCatch(async(req,res)=>{
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-
   res.status(200).json({message:user});
 })
 
 const updateUserProfile = tryCatch(async (req, res) => {
   const { name, bio, instagram, facebook, linkedin } = req.body;
-
   const user = await User.findByIdAndUpdate(
      req.user._id,
     { name, bio, instagram, facebook, linkedin },
@@ -64,9 +59,7 @@ const updateUserProfilePic = tryCatch(async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
   }
-
   const result = await uploadToCloudinary(req.file.buffer, 'user_profiles');
-
   res.status(200).json({
     message: 'File uploaded successfully',
     url: result.secure_url,

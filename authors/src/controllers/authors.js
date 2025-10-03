@@ -6,13 +6,11 @@ const createBlog = tryCatch(async (req, res) => {
     if (!req.body) {
       return res.status(400).json({ message: "No form fields provided" });
     }
-  const { title, description, blogcontent, category } = req.body;
-
+    const { title, description, blogcontent, category } = req.body;
     // Validate required fields
     if (!title || !description || !blogcontent || !category) {
       return res.status(400).json({ message: "Missing required fields" });
     }
-
     // Check file upload
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
