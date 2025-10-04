@@ -7,7 +7,7 @@ app.use("/api/v1", blogRoutes)
 dotenv.config();
 const port=process.env.PORT;
 // Create Redis client
-const redisClient = new Redis(process.env.REDIS_URL); // e.g., redis://localhost:6379
+const redisClient = new Redis(process.env.REDIS_URL); 
 // Optional: test connection
 redisClient.on("connect", () => {
   console.log("Connected to Redis successfully!");
