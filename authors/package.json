@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
+    "amqplib": "^0.10.9",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "datauri": "^4.1.0",
