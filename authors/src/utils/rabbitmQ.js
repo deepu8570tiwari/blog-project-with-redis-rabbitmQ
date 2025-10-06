@@ -17,12 +17,12 @@ const connectRabbitMq = async () => {
         console.error("Failed to connect to RabbitMQ:", error);
     }
 };
-const publicToQueue=async(queuName,message)=>{
+const publicToQueue=async(queueName,message)=>{
     if(!channel){
         return console.error("RabbitMQ is not initialized");
     }
-    await channel.assertQueue(queuName,{durable:true});
-    channel.sendToQueue(queuName, Buffer.from(JSON.stringify(message)),{
+    await channel.assertQueue(queueName,{durable:true});
+    channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)),{
         persistent:true,
     });
 }
