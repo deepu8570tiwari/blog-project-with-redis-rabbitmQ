@@ -1,6 +1,7 @@
 const { tryCatch } = require("../utils/trycatch");
 const { uploadToCloudinary } = require('../middleware/upload');
 const {postGreSql} = require("../configs/db");
+const { invalidateCacheJob } = require("../utils/rabbitmQ");
 
 const createBlog = tryCatch(async (req, res) => {
     if (!req.body) {
@@ -27,7 +28,7 @@ const createBlog = tryCatch(async (req, res) => {
     VALUES (${title}, ${description}, ${result.url}, ${blogcontent}, ${category}, ${req.user.id})
     RETURNING *
   `;
-
+  await invalidateCacheJob(["blogs:*"]);
     if (!insertInDB || insertInDB.length === 0) {
       console.error("Neon insert returned undefined — check values:", {
         title, description, blogcontent, category, image: result.url, author: req.user.id
@@ -76,7 +77,7 @@ const updateBlog = tryCatch(async (req, res) => {
     WHERE id=${id}
     RETURNING *
   `;
-
+  await invalidateCacheJob(["blogs:*", `blog:${id}`]);
   return res.status(200).json({
     message: "Blog Updated successfully",
     data: UpdatedBlog[0],
@@ -90,6 +91,7 @@ const deleteBlog=tryCatch(async(req, res)=>{
     return res.status(401).json({ message: "You are not author of this blog" });
   }
   const blogDeleted=await postGreSql`DELETE FROM blogs WHERE id = ${id}`;
+  await invalidateCacheJob(["blogs:*", `blog:${id}`]);
   if(blogDeleted){
     return res.status(200).json({message:"Blog deleted successfully"});
   }
