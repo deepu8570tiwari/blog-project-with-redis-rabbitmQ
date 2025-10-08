@@ -2,8 +2,18 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const {tryCatch}=require("../utils/trycatch");
 const { uploadToCloudinary } = require('../middleware/upload');
+const { oauth2 } = require("../utils/googleConfig");
+const axios=require("axios");
 
 const LoginUser = tryCatch(async (req, res) => {
+  const {code}=req.body;
+  if(!code){
+    return res.status(400).json({
+      message:"Authorization code is required"
+    })
+  }
+  const googleResponse= await oauth2.getToken(code);
+  oauth2.setCredentials(googleResponse.token);
   const { name, email, image } = req.body;
   let user = await User.findOne({ email });
   if (!user) {
