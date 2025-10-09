@@ -13,11 +13,12 @@ const LoginUser = tryCatch(async (req, res) => {
     })
   }
   const googleResponse= await oauth2.getToken(code);
-  oauth2.setCredentials(googleResponse.token);
-  const { name, email, image } = req.body;
+  oauth2.setCredentials(googleResponse.tokens);
+  const userResponse=await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleResponse.tokens.access_token}`)
+  const { name, email, picture } = userResponse.data;
   let user = await User.findOne({ email });
   if (!user) {
-    user = await User.create({ name, email, image });
+    user = await User.create({ name, email, picture });
   }
 
   // keep JWT lightweight

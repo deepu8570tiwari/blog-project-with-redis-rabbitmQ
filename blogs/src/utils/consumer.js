@@ -2,15 +2,16 @@
 const amqp = require("amqplib");
 const redisClient = require("../configs/redis");
 const { postGreSql } = require("../configs/db");
-
+const dotenv=require("dotenv");
+dotenv.config();
 const startCacheConsumer = async () => {
   try {
     const connection = await amqp.connect({
-      protocol: "amqp",
-      hostname: "localhost",
-      port: 5672,
-      username: "guest",
-      password: "guest",
+        protocol:process.env.RabbitMQ_protocol,
+        hostname: process.env.RabbitMQ_hostname,
+        port: process.env.RabbitMQ_port,
+        username: process.env.RabbitMQ_username,
+        password:process.env.RabbitMQ_password
     });
 
     const channel = await connection.createChannel();
