@@ -8,6 +8,8 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "@google/genai": "^1.23.0",
+    "@google/generative-ai": "^0.24.1",
     "@neondatabase/serverless": "^1.0.1",
     "amqplib": "^0.10.9",
     "cloudinary": "^2.7.0",

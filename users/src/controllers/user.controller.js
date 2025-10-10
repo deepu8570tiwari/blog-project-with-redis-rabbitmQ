@@ -20,7 +20,6 @@ const LoginUser = tryCatch(async (req, res) => {
   if (!user) {
     user = await User.create({ name, email, picture });
   }
-
   // keep JWT lightweight
   const token = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
     expiresIn: "5d",
@@ -38,7 +37,6 @@ const myProfile=tryCatch(async(req,res)=>{
   if (!user) {
     return res.status(404).json({ message: "User not found" });
   }
-
   res.json(user);
 })
 
@@ -57,15 +55,13 @@ const updateUserProfile = tryCatch(async (req, res) => {
     { name, bio, instagram, facebook, linkedin },
     { new: true }
   );
-
   if (!user) return res.status(404).json({ message: "User not found" });
-
   const token = jwt.sign({ id: user._id }, process.env.JWTSECRET, {
     expiresIn: "5d",
   });
-
   res.status(200).json({ message: "User Profile updated", token, user });
 });
+
 const updateUserProfilePic = tryCatch(async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' });
@@ -77,6 +73,9 @@ const updateUserProfilePic = tryCatch(async (req, res) => {
     public_id: result.public_id,
   });
 });
+
+
+
 module.exports = { 
   LoginUser,
   myProfile,
