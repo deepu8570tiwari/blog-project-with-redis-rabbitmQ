@@ -141,28 +141,5 @@ grammar in the following blog description and return only the corrected sentence
   return res.status(200).json(result)
 })
 
-const alBlogsResponse= tryCatch(async (req,res)=>{
-  const {blog}=req.body;
-  const prompt = ` You will act as a grammar correction engine. I will provide you with blog content
-in rich HTML format (from Jodit Editor). Do not generate or rewrite the content with new ideas. Only correct
-grammatical, punctuation, and spelling errors while preserving all HTML tags and formatting. Maintain inline styles,
-image tags, line breaks, and structural tags exactly as they are. Return the full corrected HTML string as output. `;
-if(!blog){
-  return res.status(400).json({message:"Please provide blogs"})
-}
-const fullMessage=`${prompt}\n\n ${blog}`;
-  let result=new GoogleGenerativeAI({});
-  async function main() {
-    const response = await getGenerativeModel({
-      model: "gemini-1.5-pro"
-    });
-  }
-  let rawText=response.text;
-  if(!rawText){
-   return res.status(400).json({message:"something went wrong"})
-  }
-  result= rawText.replace(/\*\*/g,"").repalce(/[\r\n]+/g,"").replace(/[*_`~]/g,"").trim();
-  await main();
-  return res.status(200).json(result)
-})
-module.exports = { createBlog,updateBlog,deleteBlog,alTitleResponse,alDescriptionResponse,alBlogsResponse};
+
+module.exports = { createBlog,updateBlog,deleteBlog,alTitleResponse,alDescriptionResponse};
