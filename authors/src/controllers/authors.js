@@ -100,6 +100,7 @@ const deleteBlog=tryCatch(async(req, res)=>{
   }
 })
 const alTitleResponse= tryCatch(async (req,res)=>{
+
   const {title}=req.body;
   const prompt=`Correct the grammer of the following blog title and return only the corrected title without any additional text, formatting, or symbols:"${title}"`;
   let result=new GoogleGenAI({});

@@ -2,7 +2,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const {tryCatch}=require("../utils/trycatch");
 const { uploadToCloudinary } = require('../middleware/upload');
-const { oauth2 } = require("../utils/googleConfig");
+const  oauth2Client  = require("../utils/googleConfig");
 const axios=require("axios");
 
 const LoginUser = tryCatch(async (req, res) => {
@@ -12,10 +12,12 @@ const LoginUser = tryCatch(async (req, res) => {
       message:"Authorization code is required"
     })
   }
-  const googleResponse= await oauth2.getToken(code);
-  oauth2.setCredentials(googleResponse.tokens);
-  const userResponse=await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleResponse.tokens.access_token}`)
-  const { name, email, picture } = userResponse.data;
+  const accessToken = req.body.code;
+  const userResponse = await axios.get(
+  `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
+);
+
+const { name, email, picture } = userResponse.data;
   let user = await User.findOne({ email });
   if (!user) {
     user = await User.create({ name, email, picture });
