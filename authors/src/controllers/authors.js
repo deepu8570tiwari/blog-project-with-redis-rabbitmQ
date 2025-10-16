@@ -2,10 +2,15 @@ const { tryCatch } = require("../utils/trycatch");
 const { uploadToCloudinary } = require('../middleware/upload');
 const {postGreSql} = require("../configs/db");
 const { invalidateCacheJob } = require("../utils/rabbitmQ");
-const { GoogleGenAI }= require("@google/genai");
 const { GoogleGenerativeAI }= require("@google/generative-ai");
+const { GoogleGenAI } = require("@google/genai");
+
 const dotenv=require("dotenv");
 dotenv.config();
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
+
 const createBlog = tryCatch(async (req, res) => {
     if (!req.body) {
       return res.status(400).json({ message: "No form fields provided" });
@@ -99,48 +104,75 @@ const deleteBlog=tryCatch(async(req, res)=>{
     return res.status(200).json({message:"Blog deleted successfully"});
   }
 })
-const alTitleResponse= tryCatch(async (req,res)=>{
 
-  const {title}=req.body;
-  const prompt=`Correct the grammer of the following blog title and return only the corrected title without any additional text, formatting, or symbols:"${title}"`;
-  let result=new GoogleGenAI({});
-  async function main() {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
+const alTitleResponse = tryCatch(async (req, res) => {
+  const { title } = req.body;
+  if (!title) {
+    return res.status(400).json({ message: "Title is required" });
   }
-  let rawText=response.text;
-  if(!rawText){
-   return res.status(400).json({message:"something went wrong"})
-  }
-  result= rawText.replace(/\*\*/g,"").repalce(/[\r\n]+/g,"").replace(/[*_`~]/g,"").trim();
-  await main();
-  return res.status(200).json(result)
-})
+  const prompt = `Correct the grammar of the following blog title and return only the corrected title without any additional text, formatting, or symbols: "${title}"`;
+  try {
+    async function main() {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
+      // response.text is available in this SDK
+      const rawText = response.text;
 
-const alDescriptionResponse= tryCatch(async (req,res)=>{
-  const {title,description}=req.body;
+      if (!rawText) {
+        return res.status(400).json({ message: "Something went wrong" });
+      }
+      const cleanedText = rawText
+        .replace(/\*\*/g, "")
+        .replace(/[\r\n]+/g, "")
+        .replace(/[*_`~]/g, "")
+        .trim();
+
+      return res.status(200).json({ result: cleanedText });
+    }
+    await main();
+  } catch (error) {
+    console.error("Gemini API error:", error);
+    return res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+});
+
+
+const alDescriptionResponse = tryCatch(async (req, res) => {
+   const {title,description}=req.body;
   const prompt = description === "" ? `Generate only one short blog description based on
 this title: "${title}". Your response must be only one sentence, strictly under 30 words, with no options, no
 greetings, and no extra text. Do not explain. Do not say 'here is'. Just return the description only.` : `Fix the
 grammar in the following blog description and return only the corrected sentence. Do not add anything else:
 "${description}"`;
-  let result=new GoogleGenAI({});
-  async function main() {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
+  try {
+    async function main() {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+      });
+      // response.text is available in this SDK
+      const rawText = response.text;
+
+      if (!rawText) {
+        return res.status(400).json({ message: "Something went wrong" });
+      }
+      const cleanedText = rawText
+        .replace(/\*\*/g, "")
+        .replace(/[\r\n]+/g, "")
+        .replace(/[*_`~]/g, "")
+        .trim();
+
+      return res.status(200).json({ result: cleanedText });
+    }
+    await main();
+  } catch (error) {
+    console.error("Gemini API error:", error);
+    return res.status(500).json({ message: "Something went wrong", error: error.message });
   }
-  let rawText=response.text;
-  if(!rawText){
-   return res.status(400).json({message:"something went wrong"})
-  }
-  result= rawText.replace(/\*\*/g,"").repalce(/[\r\n]+/g,"").replace(/[*_`~]/g,"").trim();
-  await main();
-  return res.status(200).json(result)
-})
+});
+
 
 
 module.exports = { createBlog,updateBlog,deleteBlog,alTitleResponse,alDescriptionResponse};
